@@ -4,20 +4,33 @@ import jakarta.persistence.*;
 
 import java.util.UUID;
 
-@Table(name = "reviews")
 @Entity
+@Table(name = "reviews")
 public class Reviews {
-
     @Id
     @Column
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column
+    @Column(nullable = false)
     private String user;
 
+    @Column
+    private Integer rating;
+
+    @Column(length = 1000)
+    private String comment;
+
     @ManyToOne
-    @JoinColumn(name = "game_id")
+    @JoinColumn(name = "game_id", nullable = false)
     private Game game;
 
+    public Reviews() {
+    }
+
+    public Reviews(String user, Integer rating, String comment) {
+        this.user = user;
+        this.rating = rating;
+        this.comment = comment;
+    }
 }

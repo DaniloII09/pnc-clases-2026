@@ -1,25 +1,33 @@
 package com.pnc.gamestore.model;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.ValueGenerationType;
 
 import java.util.UUID;
 
-@Table(name = "game_details")
+
 @Entity
+@Table(name = "game_details")
 public class GameDetails {
     @Id
     @Column
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column
+    @Column(length = 2000)
     private String about;
 
-    @Column()
+    @Column
     private Integer publishYear;
 
     @OneToOne
-    @JoinColumn(name = "game_id")
+    @JoinColumn(name = "game_id", unique = true)
     private Game game;
+
+    public GameDetails() {
+    }
+
+    public GameDetails(String about, Integer publishYear) {
+        this.about = about;
+        this.publishYear = publishYear;
+    }
 }
