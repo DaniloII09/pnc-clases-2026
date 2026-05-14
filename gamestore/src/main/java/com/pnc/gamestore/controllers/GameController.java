@@ -1,9 +1,9 @@
 package com.pnc.gamestore.controllers;
 
-import com.pnc.gamestore.model.Game;
+import com.pnc.gamestore.dto.request.GameRequest;
+import com.pnc.gamestore.dto.response.GameResponse;
 import com.pnc.gamestore.services.GameService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
+import jakarta.validation.Valid;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.http.ResponseEntity;
@@ -13,36 +13,50 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
-@RestController()
-@RequestMapping("game")
+@RestController
+@RequestMapping("/game")
 public class GameController {
 
-    @Autowired
-    private GameService gameService;
+    private final GameService gameService;
+
+    public GameController(GameService gameService) {
+        this.gameService = gameService;
+    }
 
     @GetMapping
-    public ResponseEntity<List<Game>> getAll(){
+    public ResponseEntity<List<GameResponse>> getAll() {
         return ResponseEntity.ok(gameService.getAll());
     }
 
-    @GetMapping("/genre")
-    public ResponseEntity<List<Game>> getByGenre(@Param("genre") String genre){
-        return ResponseEntity.ok(gameService.findByGenre(genre));
+    @GetMapping("/{id}")
+    public ResponseEntity<GameResponse> getById(@PathVariable UUID id) {
+        return ResponseEntity.ok(gameService.getById(id));
     }
 
     @PostMapping
-    public ResponseEntity<Void> createGame(@RequestBody Game game) {
-        gameService.createGame(game);
+    public ResponseEntity<GameResponse> createGame(@Valid @RequestBody GameRequest request) {
+        return ResponseEntity.ok(gameService.createGame(request));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<GameResponse> updateGame(@PathVariable UUID id,
+                                                    @Valid @RequestBody GameRequest request) {
+        return ResponseEntity.ok(gameService.updateGame(id, request));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteGame(@PathVariable UUID id) {
+        gameService.deleteGame(id);
         return ResponseEntity.noContent().build();
     }
 
     @QueryMapping
-    public List<Game> allGames() {
+    public List<GameResponse> allGames() {
         return gameService.getAll();
     }
 
     @QueryMapping
-    public Game gameById(@Argument UUID id) {
+    public GameResponse gameById(@Argument UUID id) {
         return gameService.getById(id);
     }
 }
